@@ -1,0 +1,310 @@
+<template>
+	<view style="background: #ffffff;">
+		<view class="status_bar" style="background: #ffffff;"></view>
+
+    <div style="display: flex;width:100%;margin: 12px;border-bottom: 1px solid #f7f7f7;padding-bottom: 8px;justify-content: space-around">
+      <div style="flex: 1;font-size: 14px;font-family:'NotoSansSC-Bold';cursor: pointer;"
+           @click="changeTab(0)">
+        <span :class="currentTab==0 ?'activeTab':'normalTab' ">{{ $t('assets.overview') }}</span>
+      </div>
+
+      <div style="flex: 1;font-size: 14px;font-family:'NotoSansSC-Bold';cursor: pointer;"
+           @click="changeTab(1)">
+        <span :class="currentTab==1 ?'activeTab':'normalTab' ">{{ $t('assets.funding') }}</span>
+      </div>
+
+      <div style="flex: 1;font-size: 14px;color: #bbbbbb;font-family:'NotoSansSC-Bold';cursor: pointer;"
+           @click="changeTab(2)">
+        <span :class="currentTab==2 ?'activeTab':'normalTab' ">{{ $t('assets.spot') }}</span>
+      </div>
+      <div style="flex: 1;font-size: 14px;color: #bbbbbb;font-family:'NotoSansSC-Bold';cursor: pointer;"
+           @click="changeTab(3)">
+        <span :class="currentTab==3 ?'activeTab':'normalTab' ">{{ $t('assets.futures') }}</span>
+      </div>
+      <div style="flex: 1;font-size: 14px;color: #bbbbbb;font-family:'NotoSansSC-Bold';cursor: pointer;"
+           @click="changeTab(4)">
+        <span :class="currentTab==4 ?'activeTab':'normalTab' ">{{ $t('assets.options') }}</span>
+      </div>
+      <div style="flex: 1;font-size: 14px;color: #bbbbbb;font-family:'NotoSansSC-Bold';cursor: pointer;"
+           @click="changeTab(5)">
+        <span :class="currentTab==5 ?'activeTab':'normalTab' ">{{ $t('assets.earn') }}</span>
+      </div>
+    </div>
+
+
+		<view class="m-30" style="background: #ffffff;">
+			<view class="deposit">
+				<view class="d-flex align-items-center">
+					<text class="d-block font-size-28 mr-10" style="color: #eeeeee;">{{i18n.convert}}</text>
+					<text class="iconfont  font-size-36 text-333"></text>
+				</view>
+				<view class="mt-30">
+					<view class="d-flex align-items-baseline">
+						<text class="font-size-40 mr-20 font-weight-bold" style="color: #ffffff;">{{convert}}</text>
+						<text class="font-size-22" style="color: #e1e1e1">USDT</text>
+					</view>
+				</view>
+				<view class="d-block font-size-22 opacity-50 mt-8"  style="color: #ffffff"> ≈ {{(convert * $store.state.fiat.rate).toFixed(4)}} {{$store.state.fiat.currency_code}} </view>
+				<view class="earnings-wrap">
+					<view class="earnings font-size-22 d-grid-columns-3">
+						<view class="">
+							<text class="d-block font-size-22 opacity-50">{{i18n.currentProfit}}(USDT)</text>
+							<text class="d-block font-size-34 mt-10 font-weight-bold" style="color: #ffffff;">0.00</text>
+						</view>
+						<view class="">
+							<text class="d-block font-size-22 opacity-50">{{i18n.totalkRevenue}}(USDT)</text>
+							<text class="d-block font-size-34 mt-10 font-weight-bold" style="color: #ffffff;">0.00</text>
+						</view>
+						<view class="">
+							<text class="d-block font-size-22 opacity-50">{{i18n.profitRatio}}(USDT)</text>
+							<text class="d-block font-size-34 mt-10 font-weight-bold" style="color: #ffffff;">0.00</text>
+						</view>
+					</view>
+				</view>
+				<view class="dealer" @click="$utils.jump('/pages/fund/assets_all_record')" style="opacity: 0.8">
+					<text class="mr-10">{{i18n.record}}</text>
+					<image src="/static/image/icon/copytrade-icon-1.png" style="width: 40rpx;height: 40rpx;"></image>
+				</view>
+			</view>
+
+
+
+
+			<view class="d-grid-columns-3 pt-38 mb-24 mx-30">
+				<view class="text-center " v-for="item in subNav" @click="$utils.jump(item.url)">
+					<image :src="item.icon" style="width:46rpx;height: 46rpx;"></image>
+					<text class="d-block font-size-22 mt-12 text-black">
+            <span  style="color: #000;opacity: 0.7;font-family:'googlesmall'">{{item.name}}</span>
+          </text>
+				</view>
+			</view>
+		</view>
+
+    <view class="m-30"  style="background: #ffffff;">
+			<u-subsection :list="nav" v-if="showNav" :current="current" bgColor="rgba(51,51,51,.03)"
+                    @change="tabsChange"></u-subsection>
+			<view class="mt-30">
+				<view class="p-30 border-radius-20 mb-20 text-white" v-for="item in showList"
+              style="box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, .08);"
+					@click="$utils.jump(`/pages/fund/assets_record?currency=${item.currency}&type_id=${currentAssetsType.id}&type_name=${currentAssetsType.name}`)">
+					<view class="d-flex-between-center">
+						<text class="font-size-32 font-weight-bold" style="color: #000;">{{item.currency_name }}</text>
+						<u-icon name="arrow-right" color="#999"></u-icon>
+					</view>
+					<view class="d-grid-columns-3 mt-30" style="grid-column-gap:20rpx">
+						<view class="">
+							<text class="d-block font-size-28 opacity-50" style="color: #000;opacity: 0.6;">{{i18n.availableQuota}}</text>
+							<text class="d-block font-size-28 mt-10 font-weight-bold" style="color: #000;">{{item.balance.toFixed(4)}}</text>
+						</view>
+						<view class="">
+							<text class="d-block font-size-28 opacity-50"  style="color: #000;opacity: 0.6;">{{i18n.locked}}</text>
+							<text
+								class="d-block font-size-28 mt-10 font-weight-bold"  style="color: #000;">{{item.lock_balance.toFixed(4)}}</text>
+						</view>
+						<view class="">
+							<text class="d-block font-size-28 opacity-50"  style="color: #000;opacity: 0.6;">{{i18n.converted}}(USDT)</text>
+							<text class="d-block font-size-28 mt-10 font-weight-bold"  style="color: #000;">
+								{{item.usdt_balance}}
+							</text>
+						</view>
+					</view>
+				</view>
+			</view>
+		</view>
+
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+        currentTab:0,
+				// 0:change,1:lever,2:legal,3:micro
+				current: 0,
+				convert: 0,
+				showList: [],
+				originalList: {},
+				currentAssetsType: {},
+				showNav:true,
+			};
+		},
+		onLoad() {
+			const _this = this
+			uni.setNavigationBarTitle({
+				title:_this.$t("nav")[4]
+			})
+		},
+		onShow() {
+			
+			const i18n = this.$t("fund")
+			this.nav = [{
+					name: i18n.exchange
+				}, {
+					name: i18n.leverage
+				},
+        // {
+				// 	name: i18n.fiat
+				// }, {
+				// 	name: i18n.second
+				// }
+
+        ]
+			
+			this.showNav = false
+			setTimeout(()=>{
+				this.showNav = true
+			},100)
+				
+			this.$utils.setTabbar(this)
+			uni.showTabBar()
+			this.getWalletList()
+		},
+		methods: {
+      changeTab(val){
+        this.currentTab=val;
+      },
+			// tabs通知swiper切换
+			tabsChange(index) {
+				this.current = index
+				this.setShowList()
+			},
+			getWalletList() {
+				this.$u.api.wallet.getWalletList().then(res => {
+					this.originalList = res.message
+					const convert = Number(res.message.change_wallet.totle) + Number(res.message.lever_wallet
+						.totle) + Number(res.message.legal_wallet.totle) + Number(res.message
+						.micro_wallet.totle);
+
+          let change_walletUSDT=Number(res.message.change_wallet.totle);
+          let lever_walletUSDT=Number(res.message.lever_wallet
+              .totle);
+          let legal_walletUSDT=Number(res.message.legal_wallet.totle);
+          let micro_walletUSDT=Number(res.message
+              .micro_wallet.totle);
+          console.log("change_walletUSDT=>"+change_walletUSDT);
+          console.log("lever_walletUSDT=>"+lever_walletUSDT);
+          console.log("legal_walletUSDT=>"+legal_walletUSDT);
+          console.log("micro_walletUSDT=>"+micro_walletUSDT);
+
+
+
+
+
+					this.originalList.change_wallet.balance.forEach(item => {
+						item.balance = Number(item.change_balance)
+						item.lock_balance = Number(item.lock_change_balance)
+						item.usdt_balance = parseFloat((Number(item.change_balance) * Number(item
+							.usdt_price)).toFixed(4))
+					});
+
+					this.originalList.lever_wallet.balance.forEach(item => {
+						item.balance = Number(item.lever_balance)
+						item.lock_balance = Number(item.lock_lever_balance)
+						item.usdt_balance = parseFloat((Number(item.lever_balance) * Number(item
+							.usdt_price)).toFixed(4))
+					});
+
+					this.originalList.legal_wallet.balance.forEach(item => {
+						item.balance = Number(item.legal_balance)
+						item.lock_balance = Number(item.lock_legal_balance)
+						item.usdt_balance = parseFloat((Number(item.legal_balance) * Number(item
+							.usdt_price)).toFixed(4))
+					});
+
+					this.originalList.micro_wallet.balance.forEach(item => {
+						item.balance = Number(item.micro_balance)
+						item.lock_balance = Number(item.lock_micro_balance)
+						item.usdt_balance = parseFloat((Number(item.micro_balance) * Number(item
+							.usdt_price)).toFixed(4))
+					});
+
+					this.convert = convert.toFixed(4)
+					this.setShowList()
+				})
+			},
+			setShowList() {
+				switch (this.current) {
+					case 0:
+						this.showList = this.originalList.change_wallet.balance;
+						this.currentAssetsType = this.$store.state.assetsType[1];
+						break;
+					case 1:
+						this.showList = this.originalList.lever_wallet.balance;
+						this.currentAssetsType = this.$store.state.assetsType[2];
+						break;
+					case 2:
+						this.showList = this.originalList.legal_wallet.balance;
+						this.currentAssetsType = this.$store.state.assetsType[0];
+						break;
+					case 3:
+						this.showList = this.originalList.micro_wallet.balance;
+						this.currentAssetsType = this.$store.state.assetsType[3];
+						break;
+				}
+			}
+		},
+		computed: {
+			i18n() {
+				return this.$t("fund")
+			},
+			subNav(){
+				const i18n = this.$t("fund")
+				return [{
+						name:i18n.receive,
+          icon: require('static/image/icon/cz.png'),
+
+						url: '/pages/fund/select?url=receive'
+					},{
+						name:i18n.withdraw,
+						icon: require('static/image/icon/tx.png'),
+						url: '/pages/fund/withdraw'
+					},
+					{
+						name:i18n.transfer,
+            icon: require('static/image/icon/exchange.png'),
+						url: '/pages/fund/transfer'
+					},
+				]
+			}
+		}
+	}
+</script>
+
+<style lang="scss" scoped>
+	.nav {
+		background: url(../../static/image/icon/nav-shadow.png), #ff0000;
+		background-size: auto 100%;
+		background-position: 606rpx;
+	}
+
+	.dealer {
+		position: absolute;
+		top: 26rpx;
+		right: 0;
+		color: #2A64FB;
+		border-radius: 31rpx 0 0 31rpx;
+		background-image: linear-gradient(to right, #ffffff, #ffffff,#ffffff);
+		padding: 14rpx 44rpx;
+		display: flex;
+		align-items: center;
+	}
+
+  .activeTab {
+    color: #000;
+    width: 30px;
+    border-width: 12px;
+    padding-bottom: 8px;
+    font-weight: 600;
+
+  }
+
+  .normalTab {
+    width: 30px;
+    border-width: 12px;
+    padding-bottom: 8px;
+    color: #888888;
+    font-weight: 600;
+  }
+
+</style>

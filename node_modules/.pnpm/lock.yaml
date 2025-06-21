@@ -1,0 +1,26 @@
+lockfileVersion: '6.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+dependencies:
+  '@lucky-canvas/uni':
+    specifier: 0.0.13
+    version: registry.npmmirror.com/@lucky-canvas/uni@0.0.13
+
+packages:
+
+  registry.npmmirror.com/@lucky-canvas/uni@0.0.13:
+    resolution: {integrity: sha512-rtudKkWgGY+Uj+1xvZJqbQ/NMGGvge/os0cypj12EO6RK8ZX0NKVR97SxEsFG7mn96cDn96tCg12MwmYQHkB9g==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@lucky-canvas/uni/-/uni-0.0.13.tgz}
+    name: '@lucky-canvas/uni'
+    version: 0.0.13
+    dependencies:
+      lucky-canvas: registry.npmmirror.com/lucky-canvas@1.7.27
+    dev: false
+
+  registry.npmmirror.com/lucky-canvas@1.7.27:
+    resolution: {integrity: sha512-Ftz6qD+863bI7xijBmZg3dw3cNEc7odPr70EZQcGA14y3TgTAzH65HPosOCd6kKUlMwhntBaHMx3onoj9MtJRQ==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/lucky-canvas/-/lucky-canvas-1.7.27.tgz}
+    name: lucky-canvas
+    version: 1.7.27
+    dev: false

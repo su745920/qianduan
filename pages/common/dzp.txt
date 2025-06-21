@@ -1,0 +1,109 @@
+<script>
+import LuckyWheel from '@lucky-canvas/uni/lucky-wheel' //下载并引入组件
+export default {
+  name: "dzp",
+  data() {
+    return {
+      LuckyDrawData:[],
+    };
+  },
+  onLoad() {
+    this.getLuckyDrawData();
+  },
+  methods: {
+    getLuckyDrawData() {
+      getLuckyDraw().then((resData) => {
+        if (resData.code === 4001) return uni.showModal({
+          title: '提示',
+          showCancel: false,
+          content: resData.message,
+          success: function (res) {
+            if (res.confirm) {
+              return uni.reLaunch({
+                url: `/pages/index/index?city_id=${uni.getStorageSync('city_id')}`,
+              })
+            }
+          }
+        });
+        LuckyDrawData.value = [...resData.data]
+        resData.data.forEach((item: any) => {
+          prizes.value.push({
+            fonts: [{
+              text: item.number + item.activity_prize_name,
+              top: '10%',
+              fontSize: '20rpx',
+              fontColor: '#e74b44'
+            }],
+            background: '#ffeaa7',
+            imgs: [{
+              src: item.image as string,
+              width: '25%',
+              top: '45%',
+              left: '-2%'
+            }]
+          },)
+        })
+        return prizes.value
+      })
+    }
+  }
+}
+</script>
+
+<template>
+  <view class="page_view">
+    <view class="content" :style="`background-image: url(${bgImage})`">
+      <!-- <view class="turntable_content" :style="`background-image: url(${turntableImage})`"> -->
+      <view class="turntable_content"> //这是luckyWheel插件 下面还有配置项
+        <LuckyWheel ref="myLucky" width="450rpx" height="450rpx" :prizes="prizes" :blocks="blocks"
+                    :buttons="buttons" :defaultConfig="defaultConfig" @start="startCallback" @end="endCallback" />
+        <view class="foot">
+          <image
+              src="xxxxx"
+              mode=""></image>
+        </view>
+      </view>
+      <view class="explain_activity">
+        <view class="title_content">
+          <view class="icon1"></view>
+          <view class="title">活动说明：</view>
+        </view>
+        <view class="content_explain"> //效果图提示部分
+          1、活动期间，签到7天即可获取一次转盘机会，获得额外奖励<br />
+          2、此活动新老用户均可参与，奖励直接发送至携华出行司机端<br />
+          3、活动最终解释权归杭州携华网络科技有限公司所有，如您有任何疑问，请致电客服热线：400-021-7766
+        </view>
+      </view>
+      <view class="return_btn"> //返回首页事件
+        <button class="btn" type="warn" @click="goIndex">返回首页</button>
+      </view>
+    </view>
+    <uni-popup ref="popupName" type="bottom">
+      <view class="Name_content">
+        <view class="image_con">
+          <image class="image" :src="prizeImg"></image>
+        </view>
+        <view class="text_content">
+          <view class="gift_image">
+            <image :src="giftImage"></image>
+          </view>
+          <view class="hint_content">
+            <view>
+              恭喜你！
+            </view>
+            <view>
+              获得【{{luckyName}}】
+            </view>
+          </view>
+          <view class="btn_return">
+            <button class="btn" @click="popupName.close()">领取并返回</button>
+          </view>
+        </view>
+      </view>
+    </uni-popup>
+  </view>
+</template>
+
+<style scoped lang="scss">
+
+</style>

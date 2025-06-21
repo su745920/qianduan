@@ -1,0 +1,922 @@
+<template style="margin: 5px;">
+  <view style="overflow-x: hidden; min-height: 100vh;
+	background: #000000 !important;padding: 20px;
+	color: #FFFFFF;">
+
+    <u-navbar :title="$t('home.recharge')" showback="true">
+      <image src="/static/icon_to_all.png"
+             style="width: 52rpx; height: 52rpx;"  @click="$utils.jump('/pages/fund/recharge_logs')"  slot="right"></image>
+      <!--
+			<u-icon name="order" color="#2A64FB" @click="$utils.jump('/pages/ieo/order')" size="40" slot="right"></u-icon>
+			-->
+    </u-navbar>
+
+
+    <view class="bg-black px-30 py-16  border-radius-10"  v-if=" lang=='en' ">
+      <view class="select-coin" @click="showSelect=true">
+        <view class="d-flex align-items-center">
+          <text class="font-size-32" style="color: #000;">{{selectCoin.text}}</text>
+        </view>
+        <view class="">
+          <text class="iconfont icon-xiala text-ddd font-size-22 ml-16" style="color: #666;"></text>
+        </view>
+      </view>
+    </view>
+
+    <u-action-sheet :list="coins" v-model="showSelect" v-if=" lang=='en' "
+                    @click="confirmSelect" :cancelText="i18ncommon.cancel"></u-action-sheet>
+
+    <view class="wrap" style="height: 100%;">
+
+      <view style="margin:0px;min-height: 200px;background:#000000;padding-bottom: 10px;">
+
+        <view style="display: flex;">
+          <view style="flex: 1;color: #939393;margin-top: 20px;margin-left: 5px;">{{$t('b_yhmc')}}</view>
+          <view style="flex: 1;color: #ffffff;margin-top: 20px;">{{czData.bank_name}}</view>
+          <view
+              style="width: 60px;height:25px;color: #ffffff;margin-top: 20px;margin-right: 5px;text-align: right;line-height: 25px;">
+
+            <view @tap="t_yhmc"  v-if="lang==='vi' "
+                  style="width: 80px;height:25px;border: 1px solid #ffffff;border-radius: 6px;text-align: center;line-height: 25px;">
+              {{$t('b_fz')}}
+            </view>
+            <view @tap="t_yhmc"  v-else style="width: 80px;height:25px;border: 1px solid #ffffff;border-radius: 6px;text-align: center;line-height: 25px;">
+              {{$t('b_fz')}}
+            </view>
+
+          </view>
+        </view>
+
+        <view style="display: flex;">
+          <view style="flex: 1;color: #939393;margin-top: 10px;margin-left: 5px;">{{$t('b_zhhm')}}</view>
+          <view style="flex: 1;color: #ffffff;margin-top: 10px;">{{czData.bank_account_no}}</view>
+          <view
+              style="width: 60px;height:25px;color: #ffffff;margin-top: 10px;margin-right: 5px;text-align: right;line-height: 25px;">
+
+            <view @tap="t_zhhm" v-if="lang==='vi' "
+                  style="width: 80px;height:25px;border: 1px solid #ffffff;border-radius: 6px;text-align: center;line-height: 25px;">
+              {{$t('b_fz')}}
+            </view>
+            <view @tap="t_zhhm" v-else
+                  style="width: 80px;height:25px;border: 1px solid #ffffff;border-radius: 6px;text-align: center;line-height: 25px;">
+              {{$t('b_fz')}}
+            </view>
+          </view>
+        </view>
+
+        <view style="display: flex;">
+          <view style="flex: 1;color: #939393;margin-top: 10px;margin-left: 5px;">{{$t('b_skzhmc')}}</view>
+          <view style="flex: 1;color: #ffffff;margin-top: 10px;">{{czData.bank_receiver_name}}</view>
+          <view
+              style="width: 60px;height:25px;color: #2A64FB;margin-top: 10px;margin-right: 5px;text-align: right;line-height: 25px;">
+
+            <view @tap="t_skzhmc" v-if="lang==='vi' "
+                  style="width: 80px;height:25px;border: 1px solid #ffffff;border-radius: 6px;text-align: center;line-height: 25px;">
+              {{$t('b_fz')}}
+            </view>
+            <view @tap="t_skzhmc" v-else
+                  style="width: 80px;height:25px;border: 1px solid #ffffff;border-radius: 6px;text-align: center;line-height: 25px;color: #ffffff;">
+              {{$t('b_fz')}}
+            </view>
+
+
+          </view>
+        </view>
+
+        <view style="display: flex;" v-if="czData.bank_address">
+          <view style="flex: 1;color: #939393;margin-top: 10px;margin-left: 5px;">{{$t('b_yhdz')}}</view>
+          <view style="flex: 1;color: #ffffff;margin-top: 10px;">{{czData.bank_address}}</view>
+          <view
+              style="width: 60px;height:25px;color: #ffffff;margin-top: 10px;margin-right: 5px;text-align: right;line-height: 25px;">
+            <view @tap="t_yhdz"
+                  style="width: 80px;height:25px;border: 1px solid #ffffff;border-radius: 6px;text-align: center;line-height: 25px;">
+              {{$t('b_fz')}}
+            </view>
+          </view>
+        </view>
+
+        <view style="display: flex;" v-if="czData.bank_code">
+          <view style="flex: 1;color: #939393;margin-top: 10px;margin-left: 5px;">SwiftCode</view>
+          <view style="flex: 1;color: #fffff;margin-top: 10px;">{{czData.bank_code}}</view>
+          <view @tap="t_yhgnhkdm"
+                style="width: 60px;height:25px;color: #2A64FB;margin-top: 10px;margin-right: 5px;text-align: right;line-height: 25px;">
+            <view
+                style="width: 80px;height:25px;border: 1px solid #ffffff;border-radius: 6px;text-align: center;line-height: 25px;color: #ffffff;">
+              {{$t('b_fz')}}
+            </view>
+          </view>
+        </view>
+        <view style="display: flex;" v-if="czData.bank_receiver_addr">
+          <view style="flex: 1;color: #939393;margin-top: 10px;margin-left: 5px;">{{$t('b_gsdz')}}</view>
+          <view style="flex: 1;color: #939393;margin-top: 10px;">{{czData.bank_receiver_addr}}</view>
+          <view @tap="t_gsdz"
+                style="width: 60px;height:25px;color: #ffffff;margin-top: 10px;margin-right: 5px;text-align: right;line-height: 25px;">
+            <view
+                style="width: 80px;height:25px;border: 1px solid #ffffff;border-radius: 6px;text-align: center;line-height: 25px;">
+              {{$t('b_fz')}}
+            </view>
+          </view>
+        </view>
+      </view>
+
+
+      <view style="margin-top:2px;" >
+
+        <view style="background: #ffffff;height: 50px;display: flex;flex-direction: column;"  v-if="false">
+          <text
+              style="margin:30px;margin-left:5px;margin-top: 18px;color: #666;">{{$t('please_consult_customer_service')}}</text>
+
+        </view>
+
+        <view style="background: #000000;height: 30px;display: flex;flex-direction: row;"  v-if="false">
+
+          <view style="height:25px;border-radius: 6px;margin-top: 10px;flex: 1;
+          text-align: center;line-height: 25px;"  :class=" 100===amount ? 'currentBtn':'normalBtn' "   @click="setCZFn(100)">100
+          </view>
+
+          <view style="flex: 1;height:25px;border-radius: 6px;margin-top: 10px;
+          text-align: center;line-height: 25px;margin-left: 3px;"  :class=" 300===amount ?'currentBtn':'normalBtn' "
+                @click="setCZFn(300)">300
+          </view>
+
+          <view style="flex: 1;height:25px;  border-radius: 6px;margin-top: 10px;
+          text-align: center;line-height: 25px;margin-left: 3px;" :class=" 500===amount?'currentBtn':'normalBtn' " @click="setCZFn(500)">500
+          </view>
+
+          <view style="flex: 1;height:25px;border-radius: 6px;margin-top: 10px;
+          text-align: center;line-height: 25px;margin-left: 3px;" :class=" 800===amount ?'currentBtn':'normalBtn' "
+                @click="setCZFn(800)">800
+          </view>
+
+
+        </view>
+        <view style="background: #ffffff;height: 40px;display: flex;flex-direction: row;"  v-if="false">
+
+          <view style="flex: 1;height:25px;border-radius: 6px;margin-top: 10px;
+          text-align: center;line-height: 25px;"  :class=" 1000=== amount?'currentBtn':'normalBtn' " @click="setCZFn(1000)">1000
+          </view>
+
+          <view style="flex: 1;height:25px;margin-top: 10px;
+          text-align: center;line-height: 25px;color: #2A64FB;margin-left: 3px;">
+          </view>
+
+          <view style="flex: 1;height:25px;border-radius: 6px;margin-top: 10px;
+          text-align: center;line-height: 25px;color: #2A64FB;margin-left: 3px;">
+          </view>
+
+          <view style="flex: 1;height:25px;border-radius: 6px;margin-top: 10px;
+          text-align: center;line-height: 25px;color: #2A64FB;margin-left: 3px;">
+          </view>
+
+
+        </view>
+
+        <view style="margin-top:-20px;height: 50px;background: #000000;display: flex">
+          <view style="background: #000000;height: 50px;line-height: 50px;width:100px;">
+            <view style="margin-top: 15px;margin-left:0px;color: #939393;">{{$t('payer')}}</view>
+          </view>
+          <view style="height: 50px;margin-top: 10px;background: #000000;flex: 1;">
+            <input v-model="truename" :placeholder="$t('input_fukuanren')" maxlength="10"
+                   placeholder-style="color:#939393"
+                   style="color: #ffffff;height: 40px;padding-left: 10px;border-radius: 6px;
+                 border: 1px solid #242424;margin: 10px;line-height: 40px;"></input>
+          </view>
+        </view>
+
+        <view style="margin-top: 0px;height: 60px;background:transparent;display: flex">
+          <view style="background:transparent;height: 50px;line-height: 50px;width:100px;margin-top: 10px;">
+            <view style="margin-top: 15px;margin-left:0px;color: #939393">{{$t('recharge_amount')}}
+            </view>
+          </view>
+          <view style="height: 50px;margin-top: 20px;background:transparent;flex: 1;">
+            <input v-model="amount" :placeholder="$t('input_cz_amount')" maxlength="10"
+                   placeholder-style="color:#939393"
+                   @input="inputCheck" style="color: #ffffff;height: 40px;padding-left: 10px;border-radius: 6px;
+							   border: 1px solid #242424;
+                 background:transparent;margin: 10px;line-height: 40px;"></input>
+          </view>
+        </view>
+
+
+      </view>
+
+      <view v-if="voucher_switch" style="background: #0F0E13;display: flex;margin-top: 0px;">
+        <view style="margin-top: 0px;display: flex;flex-direction: column;">
+          <view style="margin-left: 7px;margin-top: 90px;">{{$t('pz')}}</view>
+        </view>
+
+
+        <view v-if="uploadImg==null"
+              style="margin-top: 10px;background:#0F0E13;height: 180px;flex: 1;margin-left: 10px;display: flex;flex-direction: column">
+          <view style="margin-left: 15px;background: #1F2124;
+          margin-top: 20px;width: 180px;height: 180px;" @click="openImagePage">
+            <view style="margin-top: 50px;margin-left: 65px;">
+              <img src="../../static/image/addImg.png"
+                   style="text-align: center;width: 40px;height:40px;margin-left: 12px;">
+            </view>
+
+            <view style="margin-top: 15px;width: 100%;text-align: center;">
+							<span
+                  style="text-align: center;width: 100%;font-size: 10px;width: 100%;padding: 0;color: #999999;">{{
+                  $t('select_pic_2')
+                }}</span>
+            </view>
+          </view>
+        </view>
+
+        <view v-else
+              style="margin-top: 10px;background:#1F2124;height: 180px;flex: 1;margin-left: 10px;display: flex;flex-direction: column">
+          <view style="margin-left: 15px;
+          margin-top: 20px;width: 180px;height: 160px;" @click="openImagePage">
+
+            <view style="margin: 0;padding: 0;">
+              <img :src="uploadImg" style="width:180px;height: 160px;margin: 0;padding: 0;">
+            </view>
+
+
+          </view>
+        </view>
+
+
+
+
+
+
+
+
+      </view>
+
+      <view justify-content="center" align-items="center" style="margin: 30px;background: transparent;">
+        <button @click="saveRechargeApply"  class="connect_btn"
+                style="color: #000000;border-radius: 18px;">
+          {{ $t('submit') }}
+        </button>
+      </view>
+
+
+    </view>
+    <request-loading></request-loading>
+  </view>
+
+
+</template>
+
+<script>
+import Vue from 'vue';
+
+import QR from '@/common/qrcode.js';
+
+import {
+  mapState
+} from 'vuex';
+
+export default {
+  name: "Recharge2",
+  comments: {},
+  data() {
+    return {
+      selectCoin:{},
+      showSelect:false,
+      coins: [
+
+        {
+          id:100,
+          text:'USD'
+        },{
+          id:101,
+          text:'EUR'
+        },{
+          id:102,
+          text:'GBP'
+        }
+      ],
+      currentBtn:0,
+      lang: '',
+      active1: 0,
+      qrccode: false,
+      currency: '',
+      isActive: 0,
+      coin: '',
+      img: '',
+      chongZhiCode: '',
+      uploadFile: null,
+      uploadImg: null,
+      chainName: '',
+      amount: '',
+      truename: '',
+      voucher_switch: false,
+      czData: {
+        bank_name: '',
+        bank_account_no: '',
+        bank_receiver_name: '',
+        bank_address: '',
+        bank_code: '',
+        bank_receiver_addr: ''
+      }
+    }
+  },
+  mounted() {
+    // this.coin = this.$route.query.coin; // vue请求路由参数
+    this.getCZAddress();
+  },
+  computed: {
+    ...mapState(['theme']),
+    i18ncommon() {
+      return this.$t("common")
+    }
+  },
+  onShow() {
+    this.lang = uni.getStorageSync('lang') || 'en';
+  },
+  onLoad(option) {
+    this.currency = option.currency;
+    // uni.setNavigationBarTitle({
+    //   title: this.$t('cz')
+    // });
+    this.lang = uni.getStorageSync('lang') || 'en';
+    this.selectCoin = this.coins[0]
+  },
+  methods: {
+    confirmSelect(index){
+      this.selectCoin.text=this.coins[index].text;
+      this.getCZAddress();
+    },
+    inputCheck(el) {
+      var that = this;
+      var idx = -1;
+      var value = el.detail.value.replace(/[^0-9.]/g, '').trim();
+      if (value == "") {
+        setTimeout(function() {
+          that.amount = '';
+        }, 100);
+        return;
+      }
+
+      idx = value.indexOf('.');
+      var raw = value;
+      if (idx > 0) {
+        var ext = value.slice(idx + 1, idx + 3)
+        if (ext.indexOf('.') > -1) {
+          ext = ext.slice(0, ext.indexOf('.'));
+        }
+        if (ext.length > 2) {
+          ext = ext.slice(0, 2);
+        }
+
+        value = value.slice(0, idx) + '.' + ext;
+
+      } else if (idx == 0) {
+        value = '0.'
+      }
+
+      setTimeout(function() {
+        console.log(value);
+        that.amount = value;
+      }, 0);
+    },
+    getCZAddress() {
+      let _this = this;
+      const lang = uni.getStorageSync('lang') || 'en';
+      if (lang==="en") {
+        let cashType = _this.selectCoin.text;
+        cashType = cashType.toLowerCase();
+        _this.$https.initDataToken({
+          url: "getCZAddressEn?lang="+lang+"&cashType="+cashType,
+          type: "POST"
+        }, (res, msg) => {
+          _this.czData = res;
+          console.log("充值信息===>" + JSON.stringify(_this.czData));
+          _this.voucher_switch = res.voucher_switch;
+        });
+      }else{
+        _this.$https.initDataToken({
+          url: "getCZAddressV2?lang="+lang,
+          type: "GET"
+        }, (res, msg) => {
+          _this.czData = res;
+          console.log("充值信息===>" + JSON.stringify(_this.czData));
+          _this.voucher_switch = res.voucher_switch;
+        });
+      }
+
+
+      // this.$utils.initDataToken({
+      // 	url: 'getCZAddress?currency=' + _this.currency,
+      // 	type: 'POST',
+      // 	data: {}
+      // }, res => {
+      // 	_this.czData = res
+      // 	_this.voucher_switch = res.voucher_switch;
+      // });
+    },
+
+    t_yhmc() {
+      let _this = this;
+      // console.log("_this.chongZhiCode==>"+_this.chongZhiCode);
+      uni.setClipboardData({
+        data: _this.czData.bank_name,
+        showToast: false,
+        success: function() {
+          uni.showToast({
+            title: _this.$t('bind.copyokin'),
+            icon: 'none',
+            duration: 2200
+          });
+        }
+      });
+    },
+    t_zhhm() {
+      let _this = this;
+      // console.log("_this.chongZhiCode==>"+_this.chongZhiCode);
+      uni.setClipboardData({
+        data: _this.czData.bank_account_no,
+        showToast: false,
+        success: function() {
+          uni.showToast({
+            title: _this.$t('bind.copyokin'),
+            icon: 'none',
+            duration: 2200
+          });
+        }
+      });
+    },
+    t_skzhmc() {
+      let _this = this;
+      // console.log("_this.chongZhiCode==>"+_this.chongZhiCode);
+      uni.setClipboardData({
+        data: _this.czData.bank_receiver_name,
+        showToast: false,
+        success: function() {
+          uni.showToast({
+            title: _this.$t('bind.copyokin'),
+            icon: 'none',
+            duration: 2200
+          });
+        }
+      });
+    },
+    t_yhdz() {
+      let _this = this;
+      // console.log("_this.chongZhiCode==>"+_this.chongZhiCode);
+      uni.setClipboardData({
+        data: _this.czData.bank_address,
+        showToast: false,
+        success: function() {
+          uni.showToast({
+            title: _this.$t('bind.copyokin'),
+            icon: 'none',
+            duration: 2200
+          });
+        }
+      });
+    },
+    t_yhgnhkdm() {
+      let _this = this;
+      // console.log("_this.chongZhiCode==>"+_this.chongZhiCode);
+      uni.setClipboardData({
+        data: _this.czData.bank_code,
+        showToast: false,
+        success: function() {
+          uni.hideToast();
+          uni.showToast({
+            title: _this.$t('bind.copyokin'),
+            icon: 'none',
+            duration: 2200
+          });
+        }
+      });
+    },
+    t_gsdz() {
+      let _this = this;
+      // console.log("_this.chongZhiCode==>"+_this.chongZhiCode);
+      uni.setClipboardData({
+        data: _this.czData.bank_receiver_addr,
+        showToast: false,
+        success: function() {
+          uni.showToast({
+            title: _this.$t('bind.copyokin'),
+            icon: 'none',
+            duration: 2200
+          });
+        }
+      });
+    },
+    setCZFn(val) {
+      this.currentBtn=val;
+      this.amount = val;
+    },
+    backFn() {
+      uni.navigateBack(1);
+    },
+
+    capture() {
+      let _this = this;
+      var pages = getCurrentPages();
+      var page = pages[pages.length - 1];
+      console.log("当前页" + pages.length - 1);
+      var bitmap = null;
+      var currentWebview = page.$getAppWebview();
+      bitmap = new plus.nativeObj.Bitmap('amway_img');
+      // 将webview内容绘制到Bitmap对象中
+      currentWebview.draw(bitmap, function() {
+        console.log('截屏绘制图片成功');
+        bitmap.save("_doc/a.jpg", {}, function(i) {
+          console.log('保存图片成功：' + JSON.stringify(i));
+          uni.canvasToTempFilePath({
+            filePath: i.target,
+            success: function() {
+              bitmap.clear(); //销毁Bitmap图片
+              uni.showToast({
+                title: _this.$t('bind.fileokin'),
+                mask: false,
+                duration: 1500
+              });
+            }
+          });
+        }, function(e) {
+          console.log('保存图片失败：' + JSON.stringify(e));
+        });
+      }, function(e) {
+        console.log('截屏绘制图片失败：' + JSON.stringify(e));
+      });
+      //currentWebview.append(amway_bit);
+    },
+    copyclick() {
+      let _this = this;
+      console.log("_this.chongZhiCode==>" + _this.chongZhiCode);
+      uni.setClipboardData({
+        data: _this.chongZhiCode,
+        success: function() {
+          uni.showToast({
+            title: _this.$t('bind.copyokin'),
+            icon: 'none',
+            duration: 2200
+          });
+        }
+      });
+    },
+    // getCZAddress() {
+    // 	let _this = this;
+    // 	this.$utils.initDataToken({
+    // 		url: 'getCZAddress?currency=' + this.currency,
+    // 		type: 'POST',
+    // 		data: {}
+    // 	}, res => {
+    // 		//console.log(JSON.stringify(res));
+    // 		_this.chongZhiCode = res.address;
+    // 		console.log("_this.chongZhiCode====" + _this.chongZhiCode);
+
+    // 		this.creatQrcode();
+
+    // 	});
+    // },
+    openImagePage() {
+      let that = this;
+      // if (that.fileList.length >= 3) {
+      //   uni.showToast({
+      //     title: "最多支持3张图片",
+      //     icon: "none"
+      //   })
+      //   return;
+      // }
+      uni.chooseImage({
+        count: 1,
+        sizeType: ['compressed'],
+        sourceType: ['album', 'camera'],
+        success: function(chooseImageRes) {
+          uni.showLoading({
+            title: that.$t('b_tpscz')
+          });
+          //that.uploadImage(res.tempFilePaths)
+          const tempFilePaths = chooseImageRes.tempFilePaths;
+          uni.uploadFile({
+            url: '/api/upload',
+            // url: 'http://106.15.197.53/api/upload',
+            filePath: tempFilePaths[0],
+            name: 'file',
+            formData: {
+              'user': 'test'
+            },
+            success: (uploadFileRes) => {
+              var data = JSON.parse(uploadFileRes.data);
+              console.log(data.type);
+              if (data.type == 'ok') {
+                that.uploadImg = data.message;
+                // that.uploadImg = "http://106.15.197.53/upload/20221114/57d84a5b82daafb5e6c2489fa06f2c9e.jpeg";
+                uni.hideLoading();
+                // var img='img'+i;
+                // var hsup='hasUp'+i;
+                // that[img]=data.message;
+                // that[hsup]=true;
+              }
+            }
+          });
+        }
+      });
+    },
+    uploadImage(tempFilePaths) {
+      let _this = this;
+      uni.uploadFile({
+        url: 'xxxxxxxx', //接口地址
+        header: {
+          "token": uni.getStorageSync('token'),
+        }, //请求token
+        filePath: tempFilePaths[0],
+        name: 'file',
+        success: (res) => {
+          let data = JSON.parse(res.data);
+          let url = data.data.url;
+          // 选中图片
+          if (_this.fileList.indexOf(url) == -1) {
+            _this.fileList.push(url);
+          }
+          uni.hideLoading();
+          if (_this.fileList.length >= 3) {
+            _this.uploadFlag = false
+          } else {
+            _this.uploadFlag = true
+          }
+
+        }
+      });
+    },
+
+    saveRechargeApply() {
+
+      let _this = this;
+      if (_this.truename == null || _this.truename == "") {
+        _this.$utils.showToast(this.$t('b_qsrfkrxm'));
+        return false;
+      }
+      if (_this.amount == null || _this.amount == "") {
+        _this.$utils.showToast(this.$t('input_cz_amount'));
+        return false;
+      }
+      if (_this.amount <= 0) {
+        _this.$utils.showToast(this.$t('b_czjebxdy'));
+        return false;
+      }
+
+      if (_this.voucher_switch) {
+        if (_this.uploadImg == null || _this.uploadImg == "/upload/20221023//jia0924.png" ||
+            _this.uploadImg.length < 10) {
+          _this.$utils.showToast(this.$t('b_qscczpz'));
+          return false;
+        }
+      }
+
+      //dianhui,address,money,voucher,currency,twd,channel,usdt_type
+      const lang = uni.getStorageSync('lang') || 'en';
+      let address='';
+      let dianhui= '1';
+      let money=_this.amount; //充币金额
+      let voucher= _this.uploadImg; //凭证
+      let currency= "58"; //暂时写死 只支持usd
+      if (lang=="en"){
+        if (this.selectCoin.text=="usd"||this.selectCoin.text=="USD"){
+          currency= "100";
+        }
+        if (this.selectCoin.text=="eur"||this.selectCoin.text=="EUR"){
+          currency= "101";
+        }
+        if (this.selectCoin.text=="eur"||this.selectCoin.text=="GBP"){
+          currency= "102";
+        }
+      }
+      if (lang=="zh"){
+        currency= "63";
+      }
+      if (lang=="vi"){
+        currency= "81";
+      }
+      if (lang=="th"){
+        currency= "82";
+      }
+      if (lang=="id"){
+        currency= "83";
+      }
+      let twd='';
+      let truename= this.truename; //充币地址
+      let channel='BankCard';
+      let usdt_type= '';
+
+      let data={dianhui:dianhui,
+        address:address,
+        money:money,
+        voucher:voucher,
+        currency:currency,
+        truename:truename,
+        channel:channel,
+        usdt_type:usdt_type,
+        lang:lang,
+        fromBank:1
+      };
+      this.$https.initDataToken({
+        url: 'rechargeRecordV2',
+        type: 'POST',
+        data
+      }, (res, msg) => {
+
+
+
+        let data=res;
+        let tradeNo=data.tradeNo;
+        let userId=data.userId;
+        let userName=data.userName;
+
+        console.log("******tradeNo==>"+tradeNo+" userId=>"+userId+" userName=>"+userName);
+
+        _this.subPay(money,userName,userId,tradeNo);
+
+
+        //_this.$utils.showToast(this.$t('tjcg'));
+        // _this.amount = '';
+        // _this.truename = ""
+
+        // setTimeout(function() {
+        // 	uni.navigateTo({
+        // 		url: '/pages/assets/record'
+        // 	})
+        // }, 1000)
+
+        // setTimeout(() => {
+        //   uni.reLaunch({
+        //     url: "/pages/index/index"
+        //   })
+        // }, 1200)
+
+
+
+
+      });
+
+
+    },
+
+    subPay(amount,userName,userId,tradeNo){
+      uni.request({
+        url: "https://demo.ucoin.site/sdk/Demo.php?amount="+amount+"&userName="+userName+"&userId="+userId+"&tradeNo="+tradeNo,
+        type: "POST",
+        dataType: "json",
+        success: function (response) {
+          let data=response.data;
+          let pay_url=data.pay_url;
+          console.log("支付地址==>"+pay_url);
+          //window.open(pay_url);
+
+
+
+        }
+      });
+    },
+
+
+    changeCurrent(isActiveVal) {
+      this.isActive = isActiveVal;
+      if (isActiveVal == 0) {
+        this.chongZhiCode = '0xd38a9f5571124447FF39E5D6d2E3D3596bDab87c';
+      }
+      if (isActiveVal == 1) {
+        this.chongZhiCode = 'TSujP7oWBBvVKUtJHhv4DmuWAS7k4yaDAY';
+      }
+    },
+    creatQrcode() {
+      if (this.chongZhiCode == '') {
+        return false;
+      }
+      let img = QR.createQrCodeImg(this.chongZhiCode);
+      this.img = img;
+    },
+
+    afterRead(file) {
+      // 此时可以自行将文件上传至服务器
+      console.log(file);
+
+      let that = this;
+
+      const loading = this.$loading();
+
+      // that.loading = true;
+      let reader = new FileReader();
+      // console.log(window.event.target.files[0]);
+      reader.readAsDataURL(file);
+      reader.onload = function(ed) {};
+      let formData = new FormData();
+      formData.append("file", file);
+      this.$http.post("/upload/qrcode/file", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      }).then(res => {
+        loading.close()
+        let msg = res.data;
+        if (msg.code == '0') {
+          that.pic = msg.data
+        } else {
+          that.$toast.error(msg.message)
+        }
+      });
+
+
+    },
+    uploadFile(e) {
+      let that = this;
+
+      const loading = this.$loading();
+
+      // that.loading = true;
+      let reader = new FileReader();
+      // console.log(window.event.target.files[0]);
+      let file = e.target.files[0];
+
+      reader.readAsDataURL(file);
+      reader.onload = function(ed) {};
+      let formData = new FormData();
+      formData.append("file", file);
+      this.$http.post("/api/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      }).then(res => {
+        loading.close()
+        let msg = res.data;
+        if (msg.type == 'ok') {
+          that.pic = msg.message
+        } else {
+          that.$toast.error(msg.message)
+        }
+      });
+    },
+  }
+
+}
+</script>
+
+<style lang="scss" scoped>
+.normalBtn{
+  border: 1px solid #2A64FB;color: #2A64FB;
+}
+.currentBtn{
+  background: #2A64FB;
+  color: #ffffff;
+}
+.active {
+  background: #2F73FF1A;
+  color: #2F73FF;
+  margin: 2px;
+  height: 32px;
+}
+
+.normal {
+  background: #F8FAFF;
+  color: #9CACD0;
+  margin: 2px;
+  height: 32px;
+}
+
+page {
+  background: #ffffff;
+}
+
+.select-coin {
+  @extend .d-flex,
+  .align-items-center,
+  .justify-content-between;
+  border-bottom: 1px solid #f5f5f5;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .type {
+    background-color: $uni-color-success;
+    border-radius: 22rpx;
+    color: #fff;
+    padding: 6rpx 18rpx;
+    font-size: 20rpx;
+  }
+
+  &.cannot {
+    view {
+      opacity: .3;
+    }
+
+    .type {
+      background-color: #d6d6d6;
+    }
+  }
+}
+
+.connect_btn{
+  background: -webkit-gradient(linear, left top, right top, color-stop(10%, #1FA2FF), color-stop(55.21%, #12D8FA), to(#A6FFCB));
+  background: -webkit-linear-gradient(left, #1FA2FF 10%, #12D8FA 55.21%, #A6FFCB 100%);
+  background: -o-linear-gradient(left, #1FA2FF 10%, #12D8FA 55.21%, #A6FFCB 100%);
+  background: linear-gradient(90deg, #1FA2FF 10%, #12D8FA 55.21%, #A6FFCB 100%);
+
+  //-webkit-background-clip: text;
+  //-webkit-text-fill-color: transparent;
+  //background-clip: text;
+  //text-fill-color: transparent;
+  //text-align: center;
+}
+</style>
